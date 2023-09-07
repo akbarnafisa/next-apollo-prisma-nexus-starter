@@ -15,12 +15,10 @@ declare global {
 }
 
 export interface NexusGenInputs {
-  UserInput: { // input type
-    name: string; // String!
-  }
 }
 
 export interface NexusGenEnums {
+  Role: "ADMIN" | "USER"
 }
 
 export interface NexusGenScalars {
@@ -32,11 +30,28 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
-  Mutation: {};
-  Query: {};
-  User: { // root type
+  Link: { // root type
+    category: string; // String!
+    description: string; // String!
     id: number; // Int!
-    name?: string | null; // String
+    imageUrl: string; // String!
+    title: string; // String!
+    url: string; // String!
+  }
+  PageInfo: { // root type
+    endCursor?: string | null; // String
+    hasNextPage?: boolean | null; // Boolean
+  }
+  Query: {};
+  Response: { // root type
+    links: Array<NexusGenRootTypes['Link'] | null>; // [Link]!
+    pageInfo?: NexusGenRootTypes['PageInfo'] | null; // PageInfo
+  }
+  User: { // root type
+    email?: string | null; // String
+    id: number; // Int!
+    image?: string | null; // String
+    role?: NexusGenEnums['Role'] | null; // Role
   }
 }
 
@@ -48,56 +63,73 @@ export interface NexusGenUnions {
 
 export type NexusGenRootTypes = NexusGenObjects
 
-export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
-  Mutation: { // field return type
-    createUser: NexusGenRootTypes['User']; // User!
-    deleteUser: NexusGenRootTypes['User']; // User!
-    updateUser: NexusGenRootTypes['User']; // User!
+  Link: { // field return type
+    category: string; // String!
+    description: string; // String!
+    id: number; // Int!
+    imageUrl: string; // String!
+    title: string; // String!
+    url: string; // String!
+    users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
+  }
+  PageInfo: { // field return type
+    endCursor: string | null; // String
+    hasNextPage: boolean | null; // Boolean
   }
   Query: { // field return type
-    user: NexusGenRootTypes['User'] | null; // User
-    users: NexusGenRootTypes['User'][]; // [User!]!
+    links: NexusGenRootTypes['Response'] | null; // Response
+  }
+  Response: { // field return type
+    links: Array<NexusGenRootTypes['Link'] | null>; // [Link]!
+    pageInfo: NexusGenRootTypes['PageInfo'] | null; // PageInfo
   }
   User: { // field return type
+    bookmarks: Array<NexusGenRootTypes['Link'] | null> | null; // [Link]
+    email: string | null; // String
     id: number; // Int!
-    name: string | null; // String
+    image: string | null; // String
+    role: NexusGenEnums['Role'] | null; // Role
   }
 }
 
 export interface NexusGenFieldTypeNames {
-  Mutation: { // field return type name
-    createUser: 'User'
-    deleteUser: 'User'
-    updateUser: 'User'
-  }
-  Query: { // field return type name
-    user: 'User'
+  Link: { // field return type name
+    category: 'String'
+    description: 'String'
+    id: 'Int'
+    imageUrl: 'String'
+    title: 'String'
+    url: 'String'
     users: 'User'
   }
+  PageInfo: { // field return type name
+    endCursor: 'String'
+    hasNextPage: 'Boolean'
+  }
+  Query: { // field return type name
+    links: 'Response'
+  }
+  Response: { // field return type name
+    links: 'Link'
+    pageInfo: 'PageInfo'
+  }
   User: { // field return type name
+    bookmarks: 'Link'
+    email: 'String'
     id: 'Int'
-    name: 'String'
+    image: 'String'
+    role: 'Role'
   }
 }
 
 export interface NexusGenArgTypes {
-  Mutation: {
-    createUser: { // args
-      input: NexusGenInputs['UserInput']; // UserInput!
-    }
-    deleteUser: { // args
-      id: number; // Int!
-    }
-    updateUser: { // args
-      id: number; // Int!
-      input: NexusGenInputs['UserInput']; // UserInput!
-    }
-  }
   Query: {
-    user: { // args
-      id: number; // Int!
+    links: { // args
+      after?: string | null; // String
+      first?: number | null; // Int
     }
   }
 }
@@ -110,9 +142,9 @@ export interface NexusGenTypeInterfaces {
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
 
-export type NexusGenInputNames = keyof NexusGenInputs;
+export type NexusGenInputNames = never;
 
-export type NexusGenEnumNames = never;
+export type NexusGenEnumNames = keyof NexusGenEnums;
 
 export type NexusGenInterfaceNames = never;
 

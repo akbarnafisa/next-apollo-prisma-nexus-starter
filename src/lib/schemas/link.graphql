@@ -1,0 +1,16 @@
+query LinksData($first: Int, $after: String) {
+  links(first: $first, after: $after) {
+    links {
+      category
+      description
+      id
+      imageUrl
+      title
+      url
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}

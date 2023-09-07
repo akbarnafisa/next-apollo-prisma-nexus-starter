@@ -1,14 +1,14 @@
 import { makeSchema } from "nexus";
 import path from "path";
-import UserTypes from "./types/user.type";
-import UserQuery from "./query/user.query";
+import LinkTypes from "./types/link.types";
+import Userypes from "./types/user.types";
+import LinkQuery from "./query/link.query";
 import { validatePlugin } from "nexus-validate";
 import { ValidationError } from "yup";
 import { GraphQLError } from "graphql";
-import UserMutation from "./mutation/user.mutation";
 
 export const schema = makeSchema({
-  types: [UserMutation, UserQuery, ...UserTypes],
+  types: [LinkQuery, ...LinkTypes, ...Userypes],
   outputs: {
     schema: path.join(
       __dirname,

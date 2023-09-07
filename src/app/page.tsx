@@ -1,127 +1,78 @@
 "use client";
+import Head from "next/head";
+import { AwesomeLink } from "./components/AwesomeLink";
+import { useLinksDataQuery } from "@/generated/graphql";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import {
-  useUsersDataQuery,
-  useCreateUserMutation,
-  useDeleteUserMutation,
-  useUpdateUserMutation,
-  UsersDataDocument,
-} from "@/generated/graphql";
-import { FormEvent, useRef, useState } from "react";
+const PAGE_SIZE = 2;
 
 export default function Home() {
-  const [editableContent, setEditableContent] = useState(3);
-  const { data, loading, error } = useUsersDataQuery({});
-  const inputName = useRef<HTMLInputElement>(null);
-  const [createUser, { loading: isCreatingUser }] = useCreateUserMutation({
-    onCompleted: async (data) => {
-      if (data) {
-        if (inputName?.current?.value) {
-          inputName.current.value = "";
-        }
-      }
+  // const [endCursor, setEndCursor] = useState<string | null>();
+  const { data, loading, error, fetchMore } = useLinksDataQuery({
+    // fetchPolicy: "cache-and-network",
+    // nextFetchPolicy: "cache-first",
+    // notifyOnNetworkStatusChange: true,
+    variables: {
+      first: PAGE_SIZE,
+      after: null,
     },
-    update(cache, { data }) {
-      if (data) {
-        const newUser = data.createUser;
-        cache.updateQuery({ query: UsersDataDocument }, (data) => {
-          return {
-            users: [...data.users, newUser],
-          };
-        });
-      }
-    },
-    onError: (err) => window.alert(err),
   });
 
-  const [updateUser] = useUpdateUserMutation({
-    refetchQueries: [{ query: UsersDataDocument }],
-    onError: (err) => window.alert(err),
-  });
+  
 
-  const [deleteUser, { loading: isDeletingUser }] = useDeleteUserMutation({
-    refetchQueries: [{ query: UsersDataDocument }],
-    onError: (err) => window.alert(err),
-  });
+  const hasNextPage = useMemo(() => {
+    return data?.links?.pageInfo?.hasNextPage;
+  }, [data]);
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    const name = inputName?.current?.value || "";
-    createUser({
-      variables: {
-        input: {
-          name,
-        },
-      },
+  const endCursor = useMemo(() => {
+    return data?.links?.pageInfo?.endCursor;
+  }, [data]);
+
+  const handleLoadMore = useCallback(async () => {
+    await fetchMore({
+      variables: { first: PAGE_SIZE, after: endCursor },
     });
-  };
-
-  const handleDelete = (deleteUserId: number) => {
-    deleteUser({
-      variables: {
-        deleteUserId,
-      },
-    });
-  };
-
-  const handleSubmitEdit = () => {
-    const name = '12p';
-    updateUser({
-      optimisticResponse: {
-        updateUser: {
-          id: editableContent,
-          name,
-          __typename: 'User'
-        },
-      },
-      variables: {
-        updateUserId: editableContent,
-        input: {
-          name,
-        },
-      },
-    });
-    setEditableContent(0);
-  };
+  }, [endCursor, fetchMore]);
 
   if (error) {
     return <div>Error</div>;
   }
 
   return (
-    <main>
-      <div>
-        <form onSubmit={handleSubmit}>
-          <fieldset>
-            <input id="user" name="user" type="text" ref={inputName} />
-          </fieldset>
-          <button type="submit" disabled={isCreatingUser}>
-            Submit
-          </button>
-        </form>
+    <div>
+      <Head>
+        <title>Awesome Links</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <div className="container mx-auto max-w-5xl my-20">
         {loading && <p>loading...</p>}
-        <div>
-          {data?.users?.map((user) => (
-            <div key={user.id}>
-              <div
-              >
-                {user.name}
-              </div>
-              <button
-                type="button"
-                disabled={isDeletingUser}
-                onClick={() => handleDelete(user.id)}
-              >
-                Delete
-              </button>
-              {/* <button type="button" onClick={() => setEditableContent(user.id)}> */}
-              <button type="button" onClick={handleSubmitEdit}>
-                Edit
-              </button>
-            </div>
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {data?.links?.links.map((link) => (
+            <AwesomeLink
+              key={link.id}
+              url={link.url}
+              id={link.id}
+              category={link.category}
+              title={link.title}
+              description={link.description}
+              imageUrl={link.imageUrl}
+            />
           ))}
-        </div>
+        </ul>
+        {hasNextPage ? (
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded my-10"
+            onClick={handleLoadMore}
+          >
+            More
+          </button>
+        ) : (
+          <p className="my-10 text-center font-medium">
+            You have reach the end!
+          </p>
+        )}
       </div>
-    </main>
+    </div>
   );
 }

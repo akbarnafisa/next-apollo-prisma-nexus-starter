@@ -46,12 +46,16 @@ async function getApiHandler() {
   return apiHandler;
 }
 
-export async function GET(request: NextRequest, response: NextResponse) {
-  const apiHandler = await getApiHandler();
-  return apiHandler(request);
-}
+// export async function GET(request: NextRequest, response: NextResponse) {
+//   const handler = await getApiHandler();
+//   return handler(request);
+// }
 
-export async function POST(request: NextRequest, response: NextResponse) {
-  const apiHandler = await getApiHandler();
-  return apiHandler(request);
-}
+// export async function POST(request: NextRequest, response: NextResponse) {
+//   const handler = await getApiHandler();
+//   return handler(request);
+// }
+
+getApiHandler()
+
+export { apiHandler as GET, apiHandler as POST };
