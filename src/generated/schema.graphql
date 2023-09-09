@@ -5,11 +5,23 @@
 type Link {
   category: String!
   description: String!
-  id: Int!
+  id: String!
   imageUrl: String!
   title: String!
   url: String!
   users: [User]
+}
+
+input LinkInput {
+  category: String!
+  description: String!
+  imageUrl: String!
+  title: String!
+  url: String!
+}
+
+type Mutation {
+  createLink(input: LinkInput!): Link!
 }
 
 type PageInfo {
@@ -22,7 +34,7 @@ type Query {
 }
 
 type Response {
-  links: [Link]!
+  links: [Link!]!
   pageInfo: PageInfo
 }
 
@@ -34,7 +46,7 @@ enum Role {
 type User {
   bookmarks: [Link]
   email: String
-  id: Int!
+  id: String!
   image: String
   role: Role
 }

@@ -16,10 +16,10 @@ const LinkQuery = queryType({
         let queryResult = null;
         if (args.after) {
           queryResult = await ctx.prisma.link.findMany({
-            take: Number(args.first), // the number of items to return from the db TODO: handle the type
+            take: Number(args.first), // the number of items to return from the db
             skip: 1, // skip the cursor
             cursor: {
-              id: Number(args.after), // the cursor TODO: handle the type
+              id: args.after, // the cursor
             },
           });
         } else {

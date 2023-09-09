@@ -4,7 +4,9 @@ const nextConfig = {
     domains: [
       "nextjs.org",
       "www.prisma.io",
+      "prisma.io",
       "www.apollographql.com",
+      "apollographql.com",
       "tailwindcss.com",
     ],
   },

@@ -1,14 +1,15 @@
-import { makeSchema } from "nexus";
+import { fieldAuthorizePlugin, makeSchema } from "nexus";
 import path from "path";
 import LinkTypes from "./types/link.types";
 import Userypes from "./types/user.types";
 import LinkQuery from "./query/link.query";
+import LinkMutation from "./mutation/link.mutation";
 import { validatePlugin } from "nexus-validate";
 import { ValidationError } from "yup";
 import { GraphQLError } from "graphql";
 
 export const schema = makeSchema({
-  types: [LinkQuery, ...LinkTypes, ...Userypes],
+  types: [LinkMutation, LinkQuery, ...LinkTypes, ...Userypes],
   outputs: {
     schema: path.join(
       __dirname,
@@ -48,7 +49,7 @@ export const schema = makeSchema({
     },
   },
   plugins: [
-    // fieldAuthorizePlugin(),
+    fieldAuthorizePlugin(),
     validatePlugin({
       formatError: ({ error }) => {
         if (error instanceof ValidationError) {

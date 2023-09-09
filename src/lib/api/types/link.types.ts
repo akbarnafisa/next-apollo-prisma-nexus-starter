@@ -3,7 +3,7 @@ import { inputObjectType, objectType } from "nexus";
 const Link = objectType({
   name: "Link",
   definition(t) {
-    t.nonNull.int("id");
+    t.nonNull.string("id");
     t.nonNull.string("title");
     t.nonNull.string("description");
     t.nonNull.string("url");
@@ -39,12 +39,23 @@ export const Response = objectType({
     t.field("pageInfo", {
       type: PageInfo,
     });
-    t.nonNull.list.field("links", {
+    t.nonNull.list.nonNull.field("links", {
       type: "Link",
     });
   },
 });
 
-const LinkTypes = [Link, PageInfo, Response];
+const LinkInput = inputObjectType({
+  name: 'LinkInput',
+  definition(t) {
+    t.nonNull.string('title');
+    t.nonNull.string('description');
+    t.nonNull.string('url');
+    t.nonNull.string('imageUrl');
+    t.nonNull.string('category');
+  },
+});
+
+const LinkTypes = [Link, PageInfo, Response, LinkInput];
 
 export default LinkTypes;

@@ -14,3 +14,13 @@ query LinksData($first: Int, $after: String) {
     }
   }
 }
+
+mutation CreateLink($input: LinkInput!) {
+  createLink(input: $input) {
+    title
+    url
+    imageUrl
+    category
+    description
+  }
+}

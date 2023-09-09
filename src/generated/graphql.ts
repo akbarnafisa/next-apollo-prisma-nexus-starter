@@ -28,6 +28,24 @@ export type Link = {
   users?: Maybe<Array<Maybe<User>>>;
 };
 
+export type LinkInput = {
+  category: Scalars['String']['input'];
+  description: Scalars['String']['input'];
+  imageUrl: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  createLink: Link;
+};
+
+
+export type MutationCreateLinkArgs = {
+  input: LinkInput;
+};
+
 export type PageInfo = {
   __typename?: 'PageInfo';
   endCursor?: Maybe<Scalars['String']['output']>;
@@ -47,7 +65,7 @@ export type QueryLinksArgs = {
 
 export type Response = {
   __typename?: 'Response';
-  links: Array<Maybe<Link>>;
+  links: Array<Link>;
   pageInfo?: Maybe<PageInfo>;
 };
 
@@ -71,7 +89,14 @@ export type LinksDataQueryVariables = Exact<{
 }>;
 
 
-export type LinksDataQuery = { __typename?: 'Query', links?: { __typename?: 'Response', links: Array<{ __typename?: 'Link', category: string, description: string, id: number, imageUrl: string, title: string, url: string } | null>, pageInfo?: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage?: boolean | null } | null } | null };
+export type LinksDataQuery = { __typename?: 'Query', links?: { __typename?: 'Response', links: Array<{ __typename?: 'Link', category: string, description: string, id: number, imageUrl: string, title: string, url: string }>, pageInfo?: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage?: boolean | null } | null } | null };
+
+export type CreateLinkMutationVariables = Exact<{
+  input: LinkInput;
+}>;
+
+
+export type CreateLinkMutation = { __typename?: 'Mutation', createLink: { __typename?: 'Link', title: string, url: string, imageUrl: string, category: string, description: string } };
 
 
 export const LinksDataDocument = gql`
@@ -121,3 +146,40 @@ export function useLinksDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type LinksDataQueryHookResult = ReturnType<typeof useLinksDataQuery>;
 export type LinksDataLazyQueryHookResult = ReturnType<typeof useLinksDataLazyQuery>;
 export type LinksDataQueryResult = Apollo.QueryResult<LinksDataQuery, LinksDataQueryVariables>;
+export const CreateLinkDocument = gql`
+    mutation CreateLink($input: LinkInput!) {
+  createLink(input: $input) {
+    title
+    url
+    imageUrl
+    category
+    description
+  }
+}
+    `;
+export type CreateLinkMutationFn = Apollo.MutationFunction<CreateLinkMutation, CreateLinkMutationVariables>;
+
+/**
+ * __useCreateLinkMutation__
+ *
+ * To run a mutation, you first call `useCreateLinkMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateLinkMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createLinkMutation, { data, loading, error }] = useCreateLinkMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateLinkMutation(baseOptions?: Apollo.MutationHookOptions<CreateLinkMutation, CreateLinkMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateLinkMutation, CreateLinkMutationVariables>(CreateLinkDocument, options);
+      }
+export type CreateLinkMutationHookResult = ReturnType<typeof useCreateLinkMutation>;
+export type CreateLinkMutationResult = Apollo.MutationResult<CreateLinkMutation>;
+export type CreateLinkMutationOptions = Apollo.BaseMutationOptions<CreateLinkMutation, CreateLinkMutationVariables>;

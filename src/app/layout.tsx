@@ -9,6 +9,7 @@ import {
 } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client";
 import Header from "@/app/components/Layout/Header";
+import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 const client = new ApolloClient({
-  uri: "http://localhost:3000/api/graphql",
+  uri: "/api/graphql",
   cache: new InMemoryCache({
     typePolicies: {
       Query: {
@@ -63,13 +64,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ApolloProvider client={client}>
-      <html lang="en">
-        <body className={inter.className}>
-          <Header />
-          {children}
-        </body>
-      </html>
-    </ApolloProvider>
+    <UserProvider>
+      <ApolloProvider client={client}>
+        <html lang="en">
+          <body className={inter.className}>
+            <Header />
+            {children}
+          </body>
+        </html>
+      </ApolloProvider>
+    </UserProvider>
   );
 }

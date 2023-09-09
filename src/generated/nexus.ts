@@ -5,6 +5,7 @@
 
 
 import type { Context } from "./../lib/api/context"
+import type { FieldAuthorizeResolver } from "nexus/dist/plugins/fieldAuthorizePlugin"
 import type { ValidateResolver } from "nexus-validate"
 
 
@@ -15,6 +16,13 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  LinkInput: { // input type
+    category: string; // String!
+    description: string; // String!
+    imageUrl: string; // String!
+    title: string; // String!
+    url: string; // String!
+  }
 }
 
 export interface NexusGenEnums {
@@ -33,23 +41,24 @@ export interface NexusGenObjects {
   Link: { // root type
     category: string; // String!
     description: string; // String!
-    id: number; // Int!
+    id: string; // String!
     imageUrl: string; // String!
     title: string; // String!
     url: string; // String!
   }
+  Mutation: {};
   PageInfo: { // root type
     endCursor?: string | null; // String
     hasNextPage?: boolean | null; // Boolean
   }
   Query: {};
   Response: { // root type
-    links: Array<NexusGenRootTypes['Link'] | null>; // [Link]!
+    links: NexusGenRootTypes['Link'][]; // [Link!]!
     pageInfo?: NexusGenRootTypes['PageInfo'] | null; // PageInfo
   }
   User: { // root type
     email?: string | null; // String
-    id: number; // Int!
+    id: string; // String!
     image?: string | null; // String
     role?: NexusGenEnums['Role'] | null; // Role
   }
@@ -69,11 +78,14 @@ export interface NexusGenFieldTypes {
   Link: { // field return type
     category: string; // String!
     description: string; // String!
-    id: number; // Int!
+    id: string; // String!
     imageUrl: string; // String!
     title: string; // String!
     url: string; // String!
     users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
+  }
+  Mutation: { // field return type
+    createLink: NexusGenRootTypes['Link']; // Link!
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -83,13 +95,13 @@ export interface NexusGenFieldTypes {
     links: NexusGenRootTypes['Response'] | null; // Response
   }
   Response: { // field return type
-    links: Array<NexusGenRootTypes['Link'] | null>; // [Link]!
+    links: NexusGenRootTypes['Link'][]; // [Link!]!
     pageInfo: NexusGenRootTypes['PageInfo'] | null; // PageInfo
   }
   User: { // field return type
     bookmarks: Array<NexusGenRootTypes['Link'] | null> | null; // [Link]
     email: string | null; // String
-    id: number; // Int!
+    id: string; // String!
     image: string | null; // String
     role: NexusGenEnums['Role'] | null; // Role
   }
@@ -99,11 +111,14 @@ export interface NexusGenFieldTypeNames {
   Link: { // field return type name
     category: 'String'
     description: 'String'
-    id: 'Int'
+    id: 'String'
     imageUrl: 'String'
     title: 'String'
     url: 'String'
     users: 'User'
+  }
+  Mutation: { // field return type name
+    createLink: 'Link'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -119,13 +134,18 @@ export interface NexusGenFieldTypeNames {
   User: { // field return type name
     bookmarks: 'Link'
     email: 'String'
-    id: 'Int'
+    id: 'String'
     image: 'String'
     role: 'Role'
   }
 }
 
 export interface NexusGenArgTypes {
+  Mutation: {
+    createLink: { // args
+      input: NexusGenInputs['LinkInput']; // LinkInput!
+    }
+  }
   Query: {
     links: { // args
       after?: string | null; // String
@@ -142,7 +162,7 @@ export interface NexusGenTypeInterfaces {
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
 
-export type NexusGenInputNames = never;
+export type NexusGenInputNames = keyof NexusGenInputs;
 
 export type NexusGenEnumNames = keyof NexusGenEnums;
 
@@ -197,6 +217,15 @@ declare global {
   interface NexusGenPluginInputTypeConfig<TypeName extends string> {
   }
   interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
+    /**
+     * Authorization for an individual field. Returning "true"
+     * or "Promise<true>" means the field can be accessed.
+     * Returning "false" or "Promise<false>" will respond
+     * with a "Not Authorized" error for the field.
+     * Returning or throwing an error will also prevent the
+     * resolver from executing.
+     */
+    authorize?: FieldAuthorizeResolver<TypeName, FieldName>
     /**
      * Validate mutation arguments.
      */
